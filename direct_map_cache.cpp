@@ -48,7 +48,6 @@ void simulate (int cache_size, int block_size) {
     no_of_access = no_of_miss = 0;
     while (std::fscanf(fp, "%x", &x) != EOF) {
         no_of_access++;
-        //std::cout << std::hex << x << " ";
 
         index = (x>>offset_bit) & (line-1);
         tag   = x >> (index_bit+offset_bit);

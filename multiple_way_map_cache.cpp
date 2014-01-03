@@ -30,7 +30,7 @@ void simulate (int ways, int cache_size, int block_size) {
     cache_content *cache = new cache_content[line];
     std::cout << "ways:" << ways << "    ";
     std::cout << "cache_size:" << cache_size << "    ";
-    //std::cout << "block_size:" << block_size << std::endl;
+    std::cout << "block_size:" << block_size << std::endl;
     //std::cout << "cache line:" << line << "    ";
     //std::cout << "offset_bit:" << offset_bit << "    ";
     //std::cout << "index_bit:"  << index_bit << std::endl;
@@ -49,17 +49,22 @@ void simulate (int ways, int cache_size, int block_size) {
 
 
     no_of_access = no_of_miss = 0;
+
+    // age for LRU algorithm
     int age_now = 0;
     while (std::fscanf(fp, "%x", &x) != EOF) {
         no_of_access++;
         age_now++;
 
+        // consider cache[] as a 2-dimension array
+        // where cache[index*ways + i] == cache[index][i]
         index = (x>>offset_bit) & ((line/ways)-1);
         tag   = x >> (index_bit+offset_bit);
 
         int hit = false;
         // go through all ways to find if hit
         for (int i = 0; i < ways; i++) {
+            // update age when we have a non-clean box and match our tag
             if (cache[index*ways+i].age && cache[index*ways+i].tag == tag) {
                 cache[index*ways+i].age = age_now;
                 hit = true;
@@ -72,15 +77,18 @@ void simulate (int ways, int cache_size, int block_size) {
             no_of_miss++;
             int min = 55556666, idx = 0;
             for (int i = 0; i < ways; i++) {
-                if (cache[index*ways+i].age == 0) {            // clean
+                // pick up a clean one
+                if (cache[index*ways+i].age == 0) {
                     idx = i;
                     break;
                 }
+                // or find the 'youngest' one
                 else if (cache[index*ways+i].age < min) {
                     min = cache[index*ways+i].age;
                     idx = i;
                 }
             }
+            // replace this block
             cache[index*ways+idx].age= age_now;
             cache[index*ways+idx].tag = tag;
         }
