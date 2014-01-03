@@ -30,11 +30,11 @@ output [31:0]  instr_o;
 integer        i;
 
 // Instruction File
-reg    [31:0]  instruction_file    [0:31];
+reg    [31:0]  instruction_file    [0:127];
 
 initial begin
 
-    for ( i=0; i<32; i=i+1 )
+    for ( i=0; i<128; i=i+1 )
             instruction_file[i] = 32'b0;
 
 end
