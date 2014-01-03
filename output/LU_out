@@ -1,0 +1,48 @@
+ways:1    cache_size:1024    miss rate:0.123237
+===========
+ways:1    cache_size:2048    miss rate:0.095179
+===========
+ways:1    cache_size:4096    miss rate:0.0660363
+===========
+ways:1    cache_size:8192    miss rate:0.0497597
+===========
+ways:1    cache_size:16384    miss rate:0.0427841
+===========
+ways:1    cache_size:32768    miss rate:0.0375136
+===========
+ways:2    cache_size:1024    miss rate:0.0894435
+===========
+ways:2    cache_size:2048    miss rate:0.0609208
+===========
+ways:2    cache_size:4096    miss rate:0.0477445
+===========
+ways:2    cache_size:8192    miss rate:0.0406139
+===========
+ways:2    cache_size:16384    miss rate:0.0359634
+===========
+ways:2    cache_size:32768    miss rate:0.0354984
+===========
+ways:4    cache_size:1024    miss rate:0.0818478
+===========
+ways:4    cache_size:2048    miss rate:0.0511549
+===========
+ways:4    cache_size:4096    miss rate:0.0410789
+===========
+ways:4    cache_size:8192    miss rate:0.0384437
+===========
+ways:4    cache_size:16384    miss rate:0.0354984
+===========
+ways:4    cache_size:32768    miss rate:0.0350333
+===========
+ways:8    cache_size:1024    miss rate:0.0748721
+===========
+ways:8    cache_size:2048    miss rate:0.0509998
+===========
+ways:8    cache_size:4096    miss rate:0.0381336
+===========
+ways:8    cache_size:8192    miss rate:0.0354984
+===========
+ways:8    cache_size:16384    miss rate:0.0350333
+===========
+ways:8    cache_size:32768    miss rate:0.0350333
+===========
