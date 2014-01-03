@@ -4,8 +4,8 @@
 
 struct cache_content {
     bool v;
-    unsigned int  tag;
-    //	unsigned int	data[16];
+    unsigned int tag;
+    // unsigned int data[16];
 };
 
 // my own log2
@@ -38,14 +38,15 @@ void simulate (int cache_size, int block_size) {
 
     while (std::fscanf(fp, "%x", &x) != EOF) {
         std::cout << std::hex << x << " ";
+
         index = (x>>offset_bit) & (line-1);
         tag   = x >> (index_bit+offset_bit);
 
         if (cache[index].v && cache[index].tag == tag) {
-            cache[index].v = true; 			    // hit
+            cache[index].v   = true;            // hit
         }
         else {
-            cache[index].v   = true;			// miss
+            cache[index].v   = true;            // miss
             cache[index].tag = tag;
         }
     }
