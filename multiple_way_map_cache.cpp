@@ -3,8 +3,8 @@
 
 
 struct cache_content {
-    bool v;
     unsigned int tag;
+    unsigned int age;
     // unsigned int data[16];
 };
 
@@ -28,42 +28,67 @@ void simulate (int ways, int cache_size, int block_size) {
     int no_of_miss;
 
     cache_content *cache = new cache_content[line];
+    std::cout << "ways:" << ways << "    ";
     std::cout << "cache_size:" << cache_size << "    ";
-    std::cout << "block_size:" << block_size << std::endl;
+    //std::cout << "block_size:" << block_size << std::endl;
     //std::cout << "cache line:" << line << "    ";
     //std::cout << "offset_bit:" << offset_bit << "    ";
     //std::cout << "index_bit:"  << index_bit << std::endl;
 
-    for (int j = 0;j < line; j++)
-        cache[j].v = false;
+    for (int j = 0; j < line; j++) {
+        cache[j].tag = cache[j].age = 0;
+    }
 
 
-    FILE *fp = std::fopen("DCACHE.txt", "r");
-    //FILE *fp = std::fopen("ICACHE.txt", "r");
+    FILE *fp = std::fopen("LU.txt", "r");
+    //FILE *fp = std::fopen("RADIX.txt", "r");
     if (!fp) {
         std::cerr << "test file open error!" << std::endl;
+        return;
     }
 
 
     no_of_access = no_of_miss = 0;
+    int age_now = 0;
     while (std::fscanf(fp, "%x", &x) != EOF) {
         no_of_access++;
-        //std::cout << std::hex << x << " ";
+        age_now++;
 
-        index = (x>>offset_bit) & (line-1);
+        index = (x>>offset_bit) & ((line/ways)-1);
         tag   = x >> (index_bit+offset_bit);
 
-        if (cache[index].v && cache[index].tag == tag) {
-            cache[index].v   = true;            // hit
+        int hit = false;
+        // go through all ways to find if hit
+        for (int i = 0; i < ways; i++) {
+            if (cache[index*ways+i].age && cache[index*ways+i].tag == tag) {
+                cache[index*ways+i].age = age_now;
+                hit = true;
+                break;
+            }
         }
-        else {
-            cache[index].v   = true;            // miss
-            cache[index].tag = tag;
+
+        if (!hit) {
+            // no hit means miss QQ
             no_of_miss++;
+            int min = 55556666, idx = 0;
+            for (int i = 0; i < ways; i++) {
+                if (cache[index*ways+i].age == 0) {            // clean
+                    idx = i;
+                    break;
+                }
+                else if (cache[index*ways+i].age < min) {
+                    min = cache[index*ways+i].age;
+                    idx = i;
+                }
+            }
+            cache[index*ways+idx].age= age_now;
+            cache[index*ways+idx].tag = tag;
         }
     }
 
-    std::fclose(fp);
+    if (fp) {
+        std::fclose(fp);
+    }
 
     delete [] cache;
 
@@ -74,24 +99,33 @@ void simulate (int ways, int cache_size, int block_size) {
 
 int main (void) {
 
-    simulate(2,  64, 4);
-    simulate(2, 128, 4);
-    simulate(2, 256, 4);
-    simulate(2, 512, 4);
+    simulate(1,  1*K, 32);
+    simulate(1,  2*K, 32);
+    simulate(1,  4*K, 32);
+    simulate(1,  8*K, 32);
+    simulate(1, 16*K, 32);
+    simulate(1, 32*K, 32);
 
-    // simulate( 64, 8);
-    // simulate(128, 8);
-    // simulate(256, 8);
-    // simulate(512, 8);
+    simulate(2,  1*K, 32);
+    simulate(2,  2*K, 32);
+    simulate(2,  4*K, 32);
+    simulate(2,  8*K, 32);
+    simulate(2, 16*K, 32);
+    simulate(2, 32*K, 32);
 
-    // simulate( 64, 16);
-    // simulate(128, 16);
-    // simulate(256, 16);
-    // simulate(512, 16);
+    simulate(4,  1*K, 32);
+    simulate(4,  2*K, 32);
+    simulate(4,  4*K, 32);
+    simulate(4,  8*K, 32);
+    simulate(4, 16*K, 32);
+    simulate(4, 32*K, 32);
 
-    // simulate( 64, 32);
-    // simulate(128, 32);
-    // simulate(256, 32);
-    // simulate(512, 32);
+    simulate(8,  1*K, 32);
+    simulate(8,  2*K, 32);
+    simulate(8,  4*K, 32);
+    simulate(8,  8*K, 32);
+    simulate(8, 16*K, 32);
+    simulate(8, 32*K, 32);
+
     return 0;
 }
