@@ -34,7 +34,7 @@ void simulate (int cache_size, int block_size) {
     //std::cout << "offset_bit:" << offset_bit << "    ";
     //std::cout << "index_bit:"  << index_bit << std::endl;
 
-    for (int j = 0;j < line; j++)
+    for (int j = 0; j < line; j++)
         cache[j].v = false;
 
 
