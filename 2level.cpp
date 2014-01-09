@@ -22,6 +22,8 @@ void simulate (int ways, int cache_size, int block_size,
     unsigned int tag, index, x;
     unsigned int l2_tag, l2_index;
 
+    int hitcnt = 0;
+    int l2_hitcnt = 0;
     int offset_bit = log2(block_size);
     int index_bit  = log2(cache_size / ways / block_size);
     int line       = cache_size >> (offset_bit);
@@ -39,9 +41,9 @@ void simulate (int ways, int cache_size, int block_size,
     std::cout << "ways:" << ways << "    ";
     std::cout << "cache_size:" << cache_size << "    ";
     std::cout << "block_size:" << block_size << std::endl;
-    //std::cout << "cache line:" << line << "    ";
-    //std::cout << "offset_bit:" << offset_bit << "    ";
-    //std::cout << "index_bit:"  << index_bit << std::endl;
+    std::cout << "L2 ways:" << "4" << "    ";
+    std::cout << "L2 cache_size:" << l2_cache_size << "    ";
+    std::cout << "L2 block_size:"  << l2_block_size << std::endl;
 
     for (int j = 0; j < line; j++) {
         cache[j].tag = cache[j].age = 0;
@@ -53,8 +55,8 @@ void simulate (int ways, int cache_size, int block_size,
 
 
     //FILE *fp = std::fopen("LU.txt", "r");
-    //FILE *fp = std::fopen("RADIX.txt", "r");
-    FILE *fp = std::fopen("DCACHE.txt", "r");
+    FILE *fp = std::fopen("RADIX.txt", "r");
+    //FILE *fp = std::fopen("DCACHE.txt", "r");
     if (!fp) {
         std::cerr << "test file open error!" << std::endl;
         return;
@@ -84,6 +86,7 @@ void simulate (int ways, int cache_size, int block_size,
             // update age when we have a non-clean box and match our tag
             if (cache[index*ways+i].age && cache[index*ways+i].tag == tag) {
                 cache[index*ways+i].age = age_now;
+                hitcnt++;
                 hit = true;
                 break;
             }
@@ -95,6 +98,7 @@ void simulate (int ways, int cache_size, int block_size,
                 // update age when we have a non-clean box and match our tag
                 if (l2_cache[l2_index*4+i].age && l2_cache[l2_index*4+i].tag == l2_tag) {
                     l2_cache[l2_index*4+i].age = age_now;
+                    l2_hitcnt++;
                     l2_hit = true;
 
                     // missed in L1 but found in L2, update L1
@@ -136,24 +140,39 @@ void simulate (int ways, int cache_size, int block_size,
 
     delete [] cache;
 
+    double l1missrate = ((double)(l2_hitcnt+no_of_miss))/((double)(hitcnt+l2_hitcnt+no_of_miss));
+    double l2missrate = ((double)no_of_miss)/((double)(l2_hitcnt+no_of_miss));
     std::cout << "miss rate:" << (no_of_miss/(double)no_of_access) << std::endl;
+    std::cout << "AMAT:" << (1 + l1missrate*(10 + l2missrate*100)) << std::endl;
     std::cout << "===========" << std::endl;
 
 }
 
 int main (void) {
-    simulate(1,  1*K, 4, 1*K, 8);
-    simulate(1,  1*K, 4, 2*K, 8);
-    simulate(1,  1*K, 4, 4*K, 8);
-    simulate(1,  1*K, 4, 8*K, 8);
-    simulate(1,  1*K, 4, 16*K, 8);
-    //simulate(1,  2*K, 4, 2*K, 8);
-    //simulate(1,  4*K, 4, 2*K, 8);
-    //simulate(1,  8*K, 4, 2*K, 8);
-    //simulate(1, 16*K, 4, 2*K, 8);
-    //simulate(1, 32*K, 4, 2*K, 8);
+    simulate(4,  1*K, 4, 4*K, 16);
+    simulate(4,  1*K, 4, 16*K, 16);
+    simulate(4,  1*K, 4, 64*K, 16);
+    simulate(4,  1*K, 4, 256*K, 16);
 
+    simulate(4,  1*K, 4, 4*K, 32);
+    simulate(4,  1*K, 4, 16*K, 32);
+    simulate(4,  1*K, 4, 64*K, 32);
+    simulate(4,  1*K, 4, 256*K, 32);
 
+    simulate(4,  1*K, 4, 4*K, 64);
+    simulate(4,  1*K, 4, 16*K, 64);
+    simulate(4,  1*K, 4, 64*K, 64);
+    simulate(4,  1*K, 4, 256*K, 64);
+
+    simulate(4,  1*K, 4, 4*K, 128);
+    simulate(4,  1*K, 4, 16*K, 128);
+    simulate(4,  1*K, 4, 64*K, 128);
+    simulate(4,  1*K, 4, 256*K, 128);
+
+    simulate(4,  1*K, 4, 4*K, 256);
+    simulate(4,  1*K, 4, 16*K, 256);
+    simulate(4,  1*K, 4, 64*K, 256);
+    simulate(4,  1*K, 4, 256*K, 256);
 
     return 0;
 }
